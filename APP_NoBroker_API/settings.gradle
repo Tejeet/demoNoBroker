@@ -1,0 +1,2 @@
+rootProject.name = "NoBrokerDemoAPI"
+include ':app'

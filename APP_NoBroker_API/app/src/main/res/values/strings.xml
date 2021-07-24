@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Demo_NoBroker</string>
+
+
+    <!--     Splash Screen Text-->
+    <string name="splashi_loading_text">Demo_NoBroker</string>
+
+    <!--     Main Screen Text-->
+    <string name="list_view_title_text">List View</string>
+    <string name="search_property_hint_text">Search Property …</string>
+
+    <!--     Post Details Screen Text-->
+    <string name="post_details_title_text">Post Details</string>
+
+    <!--    List Items Texts-->
+    <string name="post_title_text">Post Title</string>
+    <string name="post_Description_text">Post Description</string>
+
+</resources>
