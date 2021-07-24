@@ -4,9 +4,12 @@ import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tejeet.nobrokerdemoapi.R
@@ -42,6 +45,7 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
             val resp: List<UserPosts> = it!!
 
             Log.d(TAG, "Response is ${resp.size}")
+            postListData = resp;
             postsAdapter.updateData(resp)
             shimmerFrameLayout.stopShimmerAnimation()
             shimmerFrameLayout.visibility = View.GONE
@@ -49,7 +53,33 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
 
         })
 
+        et_posts_query.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "afterTextChanged: ${s}")
+                filter(s.toString());
+            }
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+        })
+
+
+    }
+
+    fun filter(text: String) {
+        Log.d(TAG, "Orifinal List is ${postListData}")
+        val filteredList: ArrayList<UserPosts> = ArrayList()
+        for (item in postListData) {
+            if (item.title!!.toLowerCase().contains(text.toLowerCase()) || item.subTitle!!.toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item)
+            }
+        }
+        postsAdapter.updateData(filteredList)
     }
 
     override fun onBackPressed() {

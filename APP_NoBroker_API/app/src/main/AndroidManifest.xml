@@ -24,6 +24,7 @@
         </activity>
         <activity
             android:label="@string/list_view_title_text"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:name=".ui.MainActivity"
             />
     </application>
