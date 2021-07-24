@@ -15,5 +15,6 @@
     <!--    List Items Texts-->
     <string name="post_title_text">Post Title</string>
     <string name="post_Description_text">Post Description</string>
+    <string name="property_profile_description_tex">Property Profile</string>
 
 </resources>

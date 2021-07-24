@@ -23,8 +23,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:label="@string/list_view_title_text"
             android:name=".ui.MainActivity"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+            />
     </application>
 
 </manifest>
