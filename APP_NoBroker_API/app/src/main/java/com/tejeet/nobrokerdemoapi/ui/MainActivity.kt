@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,15 +24,18 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
 
     private val TAG = "tag"
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setRecyclerAdatapter()
 
+        shimmerFrameLayout.startShimmerAnimation()
+        shimmerFrameLayout.visibility = View.VISIBLE
+        rcvPosts.visibility = View.GONE
 
-        val myViewModel: PostsViewModel =
-            ViewModelProviders.of(this).get(PostsViewModel::class.java)
+        val myViewModel: PostsViewModel = ViewModelProviders.of(this).get(PostsViewModel::class.java)
 
         myViewModel.getPosts().observe(this, {
 
@@ -39,6 +43,9 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
 
             Log.d(TAG, "Response is ${resp.size}")
             postsAdapter.updateData(resp)
+            shimmerFrameLayout.stopShimmerAnimation()
+            shimmerFrameLayout.visibility = View.GONE
+            rcvPosts.visibility = View.VISIBLE
 
         })
 
@@ -51,7 +58,9 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
 
     override fun onStart() {
         super.onStart()
+
     }
+
 
     override fun onStop() {
         super.onStop()

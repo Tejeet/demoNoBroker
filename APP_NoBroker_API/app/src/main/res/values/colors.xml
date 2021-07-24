@@ -30,5 +30,6 @@
     <color name="cream">#efefee</color>
 
     <color name="transperent_a">#0000</color>
+    <color name="colorGrey">#dddddd</color>
 
 </resources>
