@@ -11,6 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
+        android:name=".ui.UserApplication"
         android:theme="@style/Theme.NoBrokerDemoAPI">
         <activity android:name=".ui.ItemDetails" />
         <activity

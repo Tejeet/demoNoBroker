@@ -8,9 +8,8 @@ import com.tejeet.nobrokerdemoapi.dataModel.UserPosts
 import com.tejeet.nobrokerdemoapi.repository.PostsDataRepository
 import kotlinx.coroutines.Dispatchers
 
-class PostsViewModel() : ViewModel() {
+class PostsViewModel(val repo : PostsDataRepository) : ViewModel() {
 
-    val repo = PostsDataRepository()
 
     fun getPosts() : LiveData<List<UserPosts>>{
 

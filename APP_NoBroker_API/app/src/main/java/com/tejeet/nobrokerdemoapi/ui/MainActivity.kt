@@ -2,23 +2,33 @@ package com.tejeet.nobrokerdemoapi.ui
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tejeet.guessmyageroommvvm.Model.UserPostsEntity
 import com.tejeet.nobrokerdemoapi.R
 import com.tejeet.nobrokerdemoapi.constants.ConstantsData
 import com.tejeet.nobrokerdemoapi.dataModel.UserPosts
+import com.tejeet.nobrokerdemoapi.repository.PostsDataRepository
 import com.tejeet.nobrokerdemoapi.ui.adapters.PostsAdapter
 import com.tejeet.nobrokerdemoapi.ui.listners.PostsClickListner
 import com.tejeet.nobrokerdemoapi.viewmodel.PostsViewModel
+import com.tejeet.nobrokerdemoapi.viewmodel.PostsViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), PostsClickListner {
 
@@ -26,6 +36,10 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
     private var postListData: List<UserPosts> = listOf()
 
     private val TAG = "tag"
+
+    private lateinit var viewModel : PostsViewModel
+
+    lateinit var dbData : UserPostsEntity
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,33 +52,68 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
         shimmerFrameLayout.visibility = View.VISIBLE
         rcvPosts.visibility = View.GONE
 
-        val myViewModel: PostsViewModel = ViewModelProviders.of(this).get(PostsViewModel::class.java)
 
-        myViewModel.getPosts().observe(this, {
+        val appObj  = application as UserApplication
+        val reposotory : PostsDataRepository = appObj.repository
 
-            val resp: List<UserPosts> = it!!
+        val viewModelFactory : PostsViewModelFactory = PostsViewModelFactory(reposotory)
 
-            Log.d(TAG, "Response is ${resp.size}")
-            postListData = resp;
-            postsAdapter.updateData(resp)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PostsViewModel::class.java)
+
+
+        if(isNetworkConnected()){
+
+            viewModel.getPosts().observe(this, {
+
+                val resp: List<UserPosts> = it!!
+
+                Log.d(TAG, "Response is ${resp.size}")
+                postListData = resp;
+                postsAdapter.updateData(resp)
+                shimmerFrameLayout.stopShimmerAnimation()
+                shimmerFrameLayout.visibility = View.GONE
+                rcvPosts.visibility = View.VISIBLE
+
+            })
+        }
+        else{
+
+            Toast.makeText(this, " No Internet loading Cached data ", Toast.LENGTH_SHORT)
+                .show()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val resp: List<UserPostsEntity> = appObj.usersDao.getDBPosts()
+
+                var postDataDB  = ArrayList<UserPosts>()
+
+
+                resp.forEach {
+                    val data = UserPosts(it.title, it.subTitle, it.image)
+                    postDataDB.add(data)
+                }
+
+                postsAdapter.updateData(postDataDB)
+
+            }
+
             shimmerFrameLayout.stopShimmerAnimation()
             shimmerFrameLayout.visibility = View.GONE
             rcvPosts.visibility = View.VISIBLE
 
-        })
 
-        et_posts_query.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged: ${s}")
-                filter(s.toString());
+
+        }
+
+
+
+        sv_post_query.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filter(it) }
+                return true
             }
         })
 
@@ -72,10 +121,10 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
     }
 
     fun filter(text: String) {
-        Log.d(TAG, "Orifinal List is ${postListData}")
+        Log.d(TAG, "Original List is ${postListData}")
         val filteredList: ArrayList<UserPosts> = ArrayList()
         for (item in postListData) {
-            if (item.title!!.toLowerCase().contains(text.toLowerCase()) || item.subTitle!!.toLowerCase().contains(text.toLowerCase())) {
+            if (item.title!!.toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(item)
             }
         }
@@ -126,15 +175,21 @@ class MainActivity : AppCompatActivity(), PostsClickListner {
     override fun onItemClick(data: UserPosts) {
 
         Log.d(TAG, "Post Item Clicked is ${data.title}")
-        gotoPostdetails(data)
+        gotoPostdetails(data)  // Pass Clicked Item to Next Activity
 
     }
 
     private fun gotoPostdetails(postData: UserPosts) {
+
         intent = Intent(this, ItemDetails::class.java);
         intent.putExtra(ConstantsData.DATA_POST_TO_POST_DETAILS, postData)
         startActivity(intent);
         overridePendingTransition(R.anim.enter_first, R.anim.enter_second);
         finish();
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
     }
 }

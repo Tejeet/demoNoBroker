@@ -22,7 +22,6 @@ class ItemDetails : AppCompatActivity() {
 
 
 
-
         val inData = intent.getSerializableExtra(ConstantsData.DATA_POST_TO_POST_DETAILS) as? UserPosts
 
         supportActionBar!!.title = "${inData?.title} Details"
@@ -34,7 +33,6 @@ class ItemDetails : AppCompatActivity() {
             .load(inData?.image)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(iv_post_profile_details)
-
 
 
     }
