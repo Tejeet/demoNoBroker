@@ -4,7 +4,7 @@
 This project is a part of Evaluation Process 
 
  --- | --- 
- ![Original Demo App](outputs/nobrokerdemo.gif) | ![Demo](example/clonedtatacliq.gif)
+ ![Original Demo App](https://github.com/Tejeet/demoNoBroker/blob/master/output/nobrokerdemo.gif) | ![Demo](https://github.com/Tejeet/demoNoBroker/blob/master/output/nobrokerdemo.gif)
 
 
 This Project is made in Kotlin Language with Android Studio IDE.Used some third party dependency as mentioned below
